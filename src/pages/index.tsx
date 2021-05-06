@@ -1,56 +1,61 @@
-import Head from 'next/head';
-import { GetServerSideProps } from 'next';
-import { CompletedCharllenges } from "../components/CompletedCharllenges";
-import { Countdown } from "../components/Countdown";
-import { ExperienceBar } from "../components/ExperienceBar";
-import { Profile } from "../components/Perfil";
-import { ChallengeBox } from "../components/ChallengeBox";
-import { CountdownProvider } from '../contexts/CountdownContext';
-import styles from '../styles/pages/Home.module.css';
-import React from 'react';
+import Head from 'next/head'
+
+import { ChallengeBox } from '../components/ChallengeBox';
+import { ExperienceBar } from '../components/ExperienceBar';
+import { Profile } from '../components/Profile';
+import { Countdown } from '../components/Countdown';
+import { CompletedChallenges } from '../components/CompletedChallenges';
+
 import { ChallengesProvider } from '../contexts/ChallengesContext';
+import { CountdownProvider } from '../contexts/CountdownContext';
+
+import styles from '../styles/pages/Home.module.css'
+import { GetServerSideProps } from 'next';
 
 interface HomeProps {
-  level: Number;
-  currentExperience: Number;
-  challengeCompleted: Number;
+  level: number;
+  currentExperience: number;
+  challengesCompleted: number;
 }
 
-export default function Home(props: HomeProps) {
+export default function Home({ level, currentExperience, challengesCompleted}: HomeProps) {
   return (
     <ChallengesProvider
-      level={props.level}
-      currentExperience={props.currentExperience}
-      challengeCompleted={props.challengeCompleted}>
-      <div className={styles.container}>
-        <Head>
-          <title>Inicío | move.it</title>
-        </Head>
-        <ExperienceBar />
-        <CountdownProvider>
+      level={level} 
+      currentExperience={currentExperience} 
+      challengesCompleted={challengesCompleted}
+    >
+      <CountdownProvider>
+        <main className={styles.container}>
+          <Head>
+            <title>move.it | Início</title>
+          </Head> 
+
+          <ExperienceBar />
+
           <section>
-            <div>
+            <div className={styles.cycleContainer}>
               <Profile />
-              <CompletedCharllenges />
+              <CompletedChallenges />
               <Countdown />
             </div>
-            <div>
-              <ChallengeBox />
-            </div>
+
+            <ChallengeBox />
           </section>
-        </CountdownProvider>
-      </div>
+        </main>
+      </CountdownProvider>
     </ChallengesProvider>
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { level, currentExperience, challengeCompleted } = ctx.req.cookies;
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const { level, currentExperience, challengesCompleted } = req.cookies;
+
   return {
     props: {
       level: Number(level),
       currentExperience: Number(currentExperience),
-      challengeCompleted: Number(challengeCompleted)
+      challengesCompleted: Number(challengesCompleted),
     }
   }
-}
+};
